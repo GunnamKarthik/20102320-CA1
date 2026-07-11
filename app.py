@@ -1,7 +1,11 @@
 # app.py - Main Flask application for Karthik IT Solutions License Manager
-# This file creates the Flask app and serves the main page
+# This file creates the Flask app, registers all route blueprints, and serves the main page
 
 from flask import Flask, render_template
+from db import init_db
+
+# Import route blueprints
+from routes_vendors import vendors_bp
 
 # Create the Flask application
 app = Flask(__name__)
@@ -13,7 +17,13 @@ def home():
     return render_template('index.html')
 
 
+# Register blueprints (each handles CRUD for one entity)
+app.register_blueprint(vendors_bp)
+
+
 # Run the app
 if __name__ == '__main__':
+    # Create all database tables on first run
+    init_db()
     # Start the Flask development server
     app.run(debug=True, port=5000)
