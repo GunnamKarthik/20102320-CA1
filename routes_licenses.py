@@ -94,3 +94,31 @@ def create_license():
     new_license = db.execute('SELECT * FROM licenses WHERE id = ?', (cursor.lastrowid,)).fetchone()
     db.close()
     return jsonify(dict(new_license)), 201
+
+
+@licenses_bp.route('/api/licenses/<int:license_id>', methods=['PUT'])
+def update_license(license_id):
+    """Update an existing license record."""
+    data = request.get_json()
+
+    if not data.get('software_name') or not data.get('license_key'):
+        return jsonify({'error': 'Software name and license key are required'}), 400
+
+    db = get_db()
+    # Update the license details
+    db.execute(
+        'UPDATE licenses SET software_name = ?, license_key = ?, purchase_date = ?, expiry_date = ?, seats = ?, cost = ?, currency = ?, status = ?, vendor_id = ? WHERE id = ?',
+        (data['software_name'], data['license_key'], data.get('purchase_date', ''),
+         data.get('expiry_date', ''), data.get('seats', 1), data.get('cost', 0.0),
+         data.get('currency', 'USD'), data.get('status', 'active'), data.get('vendor_id'), license_id)
+    )
+    db.commit()
+
+    # Return the updated license
+    updated_license = db.execute('SELECT * FROM licenses WHERE id = ?', (license_id,)).fetchone()
+    db.close()
+
+    if not updated_license:
+        return jsonify({'error': 'License not found'}), 404
+
+    return jsonify(dict(updated_license))
