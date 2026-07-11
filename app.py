@@ -6,6 +6,7 @@ from db import init_db
 
 # Import route blueprints
 from routes_vendors import vendors_bp
+from routes_licenses import licenses_bp
 
 # Create the Flask application
 app = Flask(__name__)
@@ -19,6 +20,7 @@ def home():
 
 # Register blueprints (each handles CRUD for one entity)
 app.register_blueprint(vendors_bp)
+app.register_blueprint(licenses_bp)
 
 
 # Run the app
