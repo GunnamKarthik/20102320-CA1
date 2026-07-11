@@ -1,0 +1,214 @@
+<!-- index.html - Single page application for Karthik IT Solutions License Manager -->
+<!-- This file contains all HTML, CSS (inline), and JavaScript (inline) -->
+<!-- No separate HTML or CSS files are used, as per assignment requirements -->
+
+<title>Karthik IT Solutions - License Manager</title>
+
+<!-- ==================== INLINE CSS STYLES ==================== -->
+<style>
+    /* Basic page styling */
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+
+    /* Page header */
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    /* Tab navigation bar */
+    .tab-bar {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 5px;
+    }
+
+    /* Individual tab button */
+    .tab-bar button {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        background: #fff;
+        font-size: 14px;
+    }
+
+    /* Active/selected tab */
+    .tab-bar button.active {
+        font-weight: bold;
+        background: #333;
+        color: #fff;
+        border-color: #333;
+    }
+
+    /* Each content section (hidden by default) */
+    .section {
+        display: none;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+    }
+
+    /* Active/visible section */
+    .section.active {
+        display: block;
+    }
+
+    /* Form styling */
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    .form-group label {
+        display: inline-block;
+        width: 150px;
+        font-weight: bold;
+    }
+
+    .form-group input, .form-group select {
+        padding: 5px;
+        width: 250px;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 8px 16px;
+        cursor: pointer;
+        margin-right: 5px;
+        border: 1px solid #ccc;
+        font-size: 13px;
+    }
+
+    .btn-add { background: #4CAF50; color: white; border-color: #4CAF50; }
+    .btn-edit { background: #2196F3; color: white; border-color: #2196F3; }
+    .btn-delete { background: #f44336; color: white; border-color: #f44336; }
+    .btn-cancel { background: #999; color: white; border-color: #999; }
+    .btn-convert { background: #FF9800; color: white; border-color: #FF9800; }
+
+    /* Table styling */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    th {
+        background: #f2f2f2;
+    }
+
+    /* Status colors for license status */
+    .status-active { color: green; font-weight: bold; }
+    .status-expiring { color: orange; font-weight: bold; }
+    .status-expired { color: red; font-weight: bold; }
+
+    /* Success and error messages */
+    .message {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+    }
+
+    .message-success { background: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
+    .message-error { background: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
+
+    /* Search and filter bar */
+    .filter-bar {
+        margin: 10px 0;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .filter-bar input, .filter-bar select {
+        padding: 5px;
+    }
+
+    /* Currency conversion result display */
+    .convert-result {
+        display: inline;
+        margin-left: 10px;
+        font-weight: bold;
+        color: #FF9800;
+    }
+</style>
+
+<!-- ==================== HTML STRUCTURE ==================== -->
+
+<!-- Page Header -->
+<h1>Karthik IT Solutions</h1>
+<h3 style="text-align:center; color:#666;">Software License Manager</h3>
+
+<!-- Message area for success/error feedback -->
+<div id="message-area"></div>
+
+<!-- Tab Navigation Bar -->
+<div class="tab-bar">
+    <button id="tab-vendors" class="active" onclick="showTab('vendors')">Vendors</button>
+    <button id="tab-licenses" onclick="showTab('licenses')">Licenses</button>
+    <button id="tab-users" onclick="showTab('users')">Users</button>
+    <button id="tab-assignments" onclick="showTab('assignments')">Assignments</button>
+</div>
+
+<!-- ========== VENDORS SECTION ========== -->
+<div id="section-vendors" class="section active">
+    <h2>Vendors</h2>
+    <p>Vendor management coming soon.</p>
+</div>
+
+<!-- ========== LICENSES SECTION ========== -->
+<div id="section-licenses" class="section">
+    <h2>Licenses</h2>
+    <p>License tracking coming soon.</p>
+</div>
+
+<!-- ========== USERS SECTION ========== -->
+<div id="section-users" class="section">
+    <h2>Users</h2>
+    <p>User management coming soon.</p>
+</div>
+
+<!-- ========== ASSIGNMENTS SECTION ========== -->
+<div id="section-assignments" class="section">
+    <h2>License Assignments</h2>
+    <p>License assignments coming soon.</p>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+
+// showTab - Switches between the four tabs (vendors, licenses, users, assignments)
+function showTab(tab_name) {
+    // Hide all sections
+    let all_sections = document.querySelectorAll('.section');
+    for (let i = 0; i < all_sections.length; i++) {
+        all_sections[i].classList.remove('active');
+    }
+    // Remove active class from all tab buttons
+    let all_tabs = document.querySelectorAll('.tab-bar button');
+    for (let i = 0; i < all_tabs.length; i++) {
+        all_tabs[i].classList.remove('active');
+    }
+    // Show the selected section and highlight its tab
+    document.getElementById('section-' + tab_name).classList.add('active');
+    document.getElementById('tab-' + tab_name).classList.add('active');
+}
+
+// When the page loads, show the Vendors tab by default
+document.addEventListener('DOMContentLoaded', function() {
+    showTab('vendors');
+});
+
+</script>
