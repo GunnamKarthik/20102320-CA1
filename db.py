@@ -55,3 +55,13 @@ CREATE TABLE IF NOT EXISTS license_assignments (
     UNIQUE(license_id, user_id)
 );
 """
+
+
+def get_db(db_path=None):
+    """Connect to the SQLite database and return the connection.
+    Uses row_factory so we can access columns by name like a dictionary."""
+    path = db_path or DATABASE
+    db = sqlite3.connect(path)
+    db.row_factory = sqlite3.Row  # allows dict-like access to rows
+    db.execute("PRAGMA foreign_keys = ON")  # enforce foreign key constraints
+    return db
