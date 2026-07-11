@@ -165,7 +165,58 @@
 <!-- ========== VENDORS SECTION ========== -->
 <div id="section-vendors" class="section active">
     <h2>Vendors</h2>
-    <p>Vendor management coming soon.</p>
+
+    <!-- Vendor form for creating/updating -->
+    <div id="vendor-form">
+        <input type="hidden" id="vendor-id">
+        <div class="form-group">
+            <label for="vendor-company-name">Company Name*:</label>
+            <input type="text" id="vendor-company-name" required>
+        </div>
+        <div class="form-group">
+            <label for="vendor-contact-email">Contact Email:</label>
+            <input type="email" id="vendor-contact-email">
+        </div>
+        <div class="form-group">
+            <label for="vendor-website">Website:</label>
+            <input type="text" id="vendor-website">
+        </div>
+        <div class="form-group">
+            <label for="vendor-country">Country:</label>
+            <input type="text" id="vendor-country">
+        </div>
+        <div class="form-group">
+            <label for="vendor-currency">Default Currency:</label>
+            <select id="vendor-currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="INR">INR</option>
+                <option value="AUD">AUD</option>
+                <option value="CAD">CAD</option>
+                <option value="JPY">JPY</option>
+            </select>
+        </div>
+        <button class="btn btn-add" onclick="saveVendor()">Add Vendor</button>
+        <button class="btn btn-cancel" onclick="clearVendorForm()" style="display:none" id="vendor-cancel-btn">Cancel</button>
+    </div>
+
+    <!-- Table to display all vendors -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>Email</th>
+                <th>Website</th>
+                <th>Country</th>
+                <th>Currency</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="vendors-table-body">
+        </tbody>
+    </table>
 </div>
 
 <!-- ========== LICENSES SECTION ========== -->
@@ -189,24 +240,148 @@
 <!-- ==================== JAVASCRIPT ==================== -->
 <script>
 
-// showTab - Switches between the four tabs (vendors, licenses, users, assignments)
+// apiCall - Makes a fetch request to the Flask API and returns the JSON response
+async function apiCall(method, url, body = null) {
+    let options = {
+        method: method,
+        headers: { 'Content-Type': 'application/json' }
+    };
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+    let response = await fetch(url, options);
+    let data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong');
+    }
+    return data;
+}
+
+// showMessage - Displays a success or error message to the user
+function showMessage(text, is_error = false) {
+    let message_area = document.getElementById('message-area');
+    let css_class = is_error ? 'message message-error' : 'message message-success';
+    message_area.innerHTML = '<div class="' + css_class + '">' + text + '</div>';
+    setTimeout(function() {
+        message_area.innerHTML = '';
+    }, 4000);
+}
+
+// showTab - Switches between the four tabs
 function showTab(tab_name) {
-    // Hide all sections
     let all_sections = document.querySelectorAll('.section');
     for (let i = 0; i < all_sections.length; i++) {
         all_sections[i].classList.remove('active');
     }
-    // Remove active class from all tab buttons
     let all_tabs = document.querySelectorAll('.tab-bar button');
     for (let i = 0; i < all_tabs.length; i++) {
         all_tabs[i].classList.remove('active');
     }
-    // Show the selected section and highlight its tab
     document.getElementById('section-' + tab_name).classList.add('active');
     document.getElementById('tab-' + tab_name).classList.add('active');
+    if (tab_name === 'vendors') loadVendors();
 }
 
-// When the page loads, show the Vendors tab by default
+// loadVendors - Fetch all vendors from the API and display them in the table
+async function loadVendors() {
+    try {
+        let vendors = await apiCall('GET', '/api/vendors');
+        let table_body = document.getElementById('vendors-table-body');
+        table_body.innerHTML = '';
+        for (let i = 0; i < vendors.length; i++) {
+            let vendor = vendors[i];
+            let row = '<tr>';
+            row += '<td>' + vendor.id + '</td>';
+            row += '<td>' + vendor.company_name + '</td>';
+            row += '<td>' + vendor.contact_email + '</td>';
+            row += '<td>' + vendor.website + '</td>';
+            row += '<td>' + vendor.country + '</td>';
+            row += '<td>' + vendor.default_currency + '</td>';
+            row += '<td>';
+            row += '<button class="btn btn-edit" onclick="editVendor(' + vendor.id + ')">Edit</button>';
+            row += '<button class="btn btn-delete" onclick="deleteVendor(' + vendor.id + ')">Delete</button>';
+            row += '</td>';
+            row += '</tr>';
+            table_body.innerHTML += row;
+        }
+    } catch (error) {
+        showMessage('Error loading vendors: ' + error.message, true);
+    }
+}
+
+// saveVendor - Create a new vendor or update an existing one
+async function saveVendor() {
+    let vendor_data = {
+        company_name: document.getElementById('vendor-company-name').value,
+        contact_email: document.getElementById('vendor-contact-email').value,
+        website: document.getElementById('vendor-website').value,
+        country: document.getElementById('vendor-country').value,
+        default_currency: document.getElementById('vendor-currency').value
+    };
+    if (!vendor_data.company_name) {
+        showMessage('Company name is required', true);
+        return;
+    }
+    try {
+        let vendor_id = document.getElementById('vendor-id').value;
+        if (vendor_id) {
+            await apiCall('PUT', '/api/vendors/' + vendor_id, vendor_data);
+            showMessage('Vendor updated successfully');
+        } else {
+            await apiCall('POST', '/api/vendors', vendor_data);
+            showMessage('Vendor added successfully');
+        }
+        clearVendorForm();
+        loadVendors();
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// editVendor - Fill the form with a vendor's data so the user can update it
+async function editVendor(id) {
+    try {
+        let vendors = await apiCall('GET', '/api/vendors');
+        let vendor = vendors.find(function(v) { return v.id === id; });
+        if (vendor) {
+            document.getElementById('vendor-id').value = vendor.id;
+            document.getElementById('vendor-company-name').value = vendor.company_name;
+            document.getElementById('vendor-contact-email').value = vendor.contact_email;
+            document.getElementById('vendor-website').value = vendor.website;
+            document.getElementById('vendor-country').value = vendor.country;
+            document.getElementById('vendor-currency').value = vendor.default_currency;
+            document.querySelector('#vendor-form .btn-add').textContent = 'Save Changes';
+            document.getElementById('vendor-cancel-btn').style.display = 'inline';
+        }
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// deleteVendor - Delete a vendor
+async function deleteVendor(id) {
+    try {
+        await apiCall('DELETE', '/api/vendors/' + id);
+        showMessage('Vendor deleted successfully');
+        loadVendors();
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// clearVendorForm - Reset the vendor form to blank (add mode)
+function clearVendorForm() {
+    document.getElementById('vendor-id').value = '';
+    document.getElementById('vendor-company-name').value = '';
+    document.getElementById('vendor-contact-email').value = '';
+    document.getElementById('vendor-website').value = '';
+    document.getElementById('vendor-country').value = '';
+    document.getElementById('vendor-currency').value = 'USD';
+    document.querySelector('#vendor-form .btn-add').textContent = 'Add Vendor';
+    document.getElementById('vendor-cancel-btn').style.display = 'none';
+}
+
+// When the page loads, show the Vendors tab by default and load vendor data
 document.addEventListener('DOMContentLoaded', function() {
     showTab('vendors');
 });
