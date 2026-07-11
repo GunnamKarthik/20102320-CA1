@@ -42,3 +42,32 @@ def create_vendor():
     new_vendor = db.execute('SELECT * FROM vendors WHERE id = ?', (cursor.lastrowid,)).fetchone()
     db.close()
     return jsonify(dict(new_vendor)), 201
+
+
+@vendors_bp.route('/api/vendors/<int:vendor_id>', methods=['PUT'])
+def update_vendor(vendor_id):
+    """Update an existing vendor record."""
+    data = request.get_json()
+
+    # Check that the required field is provided
+    if not data.get('company_name'):
+        return jsonify({'error': 'Company name is required'}), 400
+
+    db = get_db()
+    # Update the vendor's details in the database
+    db.execute(
+        'UPDATE vendors SET company_name = ?, contact_email = ?, website = ?, country = ?, default_currency = ? WHERE id = ?',
+        (data['company_name'], data.get('contact_email', ''), data.get('website', ''),
+         data.get('country', ''), data.get('default_currency', 'USD'), vendor_id)
+    )
+    db.commit()
+
+    # Fetch the updated vendor to return it
+    updated_vendor = db.execute('SELECT * FROM vendors WHERE id = ?', (vendor_id,)).fetchone()
+    db.close()
+
+    # If no vendor was found with that ID, return a 404 error
+    if not updated_vendor:
+        return jsonify({'error': 'Vendor not found'}), 404
+
+    return jsonify(dict(updated_vendor))
