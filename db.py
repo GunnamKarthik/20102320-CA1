@@ -65,3 +65,11 @@ def get_db(db_path=None):
     db.row_factory = sqlite3.Row  # allows dict-like access to rows
     db.execute("PRAGMA foreign_keys = ON")  # enforce foreign key constraints
     return db
+
+
+def init_db(db_path=None):
+    """Create all tables if they don't already exist."""
+    db = get_db(db_path)
+    db.executescript(SCHEMA)
+    db.commit()
+    db.close()
