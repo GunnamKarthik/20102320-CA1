@@ -71,3 +71,23 @@ def update_vendor(vendor_id):
         return jsonify({'error': 'Vendor not found'}), 404
 
     return jsonify(dict(updated_vendor))
+
+
+@vendors_bp.route('/api/vendors/<int:vendor_id>', methods=['DELETE'])
+def delete_vendor(vendor_id):
+    """Delete a vendor. Fails if the vendor still has licenses linked to it."""
+    db = get_db()
+
+    # Check if this vendor has any licenses linked to it
+    license_count = db.execute('SELECT COUNT(*) as count FROM licenses WHERE vendor_id = ?', (vendor_id,)).fetchone()['count']
+
+    if license_count > 0:
+        db.close()
+        # Cannot delete a vendor that still has licenses (RESTRICT)
+        return jsonify({'error': 'Cannot delete vendor: it still has ' + str(license_count) + ' license(s) linked to it'}), 409
+
+    # Safe to delete the vendor
+    db.execute('DELETE FROM vendors WHERE id = ?', (vendor_id,))
+    db.commit()
+    db.close()
+    return jsonify({'message': 'Vendor deleted successfully'})
