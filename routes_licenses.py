@@ -60,3 +60,37 @@ def get_all_licenses():
     db.close()
     result = [dict(row) for row in licenses]
     return jsonify(result)
+
+
+@licenses_bp.route('/api/licenses', methods=['POST'])
+def create_license():
+    """Create a new license record."""
+    data = request.get_json()
+
+    # Validate required fields
+    if not data.get('software_name') or not data.get('license_key'):
+        return jsonify({'error': 'Software name and license key are required'}), 400
+    if not data.get('vendor_id'):
+        return jsonify({'error': 'Vendor is required'}), 400
+
+    db = get_db()
+
+    # Check that the vendor exists
+    vendor = db.execute('SELECT id FROM vendors WHERE id = ?', (data['vendor_id'],)).fetchone()
+    if not vendor:
+        db.close()
+        return jsonify({'error': 'Vendor not found'}), 400
+
+    # Insert the new license
+    cursor = db.execute(
+        'INSERT INTO licenses (software_name, license_key, purchase_date, expiry_date, seats, cost, currency, status, vendor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        (data['software_name'], data['license_key'], data.get('purchase_date', ''),
+         data.get('expiry_date', ''), data.get('seats', 1), data.get('cost', 0.0),
+         data.get('currency', 'USD'), data.get('status', 'active'), data['vendor_id'])
+    )
+    db.commit()
+
+    # Return the newly created license
+    new_license = db.execute('SELECT * FROM licenses WHERE id = ?', (cursor.lastrowid,)).fetchone()
+    db.close()
+    return jsonify(dict(new_license)), 201
