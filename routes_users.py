@@ -72,6 +72,7 @@ def update_user(user_id):
     )
     db.commit()
 
+    # Return the updated user
     updated_user = db.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
     db.close()
 
@@ -79,3 +80,13 @@ def update_user(user_id):
         return jsonify({'error': 'User not found'}), 404
 
     return jsonify(dict(updated_user))
+
+
+@users_bp.route('/api/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    """Delete a user. Any license assignments will be removed automatically (CASCADE)."""
+    db = get_db()
+    db.execute('DELETE FROM users WHERE id = ?', (user_id,))
+    db.commit()
+    db.close()
+    return jsonify({'message': 'User deleted successfully'})
