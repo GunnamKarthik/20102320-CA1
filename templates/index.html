@@ -321,7 +321,46 @@
 <!-- ========== USERS SECTION ========== -->
 <div id="section-users" class="section">
     <h2>Users</h2>
-    <p>User management coming soon.</p>
+
+    <!-- User form for creating/updating -->
+    <div id="user-form">
+        <input type="hidden" id="user-id">
+        <div class="form-group">
+            <label for="user-name">Name*:</label>
+            <input type="text" id="user-name" required>
+        </div>
+        <div class="form-group">
+            <label for="user-email">Email*:</label>
+            <input type="email" id="user-email" required>
+        </div>
+        <div class="form-group">
+            <label for="user-department">Department:</label>
+            <input type="text" id="user-department">
+        </div>
+        <div class="form-group">
+            <label for="user-role">Role:</label>
+            <input type="text" id="user-role">
+        </div>
+        <button class="btn btn-add" onclick="saveUser()">Add User</button>
+        <button class="btn btn-cancel" onclick="clearUserForm()" style="display:none" id="user-cancel-btn">Cancel</button>
+    </div>
+
+    <!-- Table to display all users -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="users-table-body">
+            <!-- Rows will be inserted here by JavaScript -->
+        </tbody>
+    </table>
 </div>
 
 <!-- ========== ASSIGNMENTS SECTION ========== -->
@@ -389,6 +428,7 @@ function showTab(tab_name) {
     // Load the data for the selected tab
     if (tab_name === 'vendors') loadVendors();
     if (tab_name === 'licenses') loadLicenses();
+    if (tab_name === 'users') loadUsers();
 }
 
 // ============================
@@ -660,6 +700,107 @@ function clearLicenseForm() {
     document.getElementById('license-status').value = 'active';
     document.querySelector('#license-form .btn-add').textContent = 'Add License';
     document.getElementById('license-cancel-btn').style.display = 'none';
+}
+
+// ============================
+// USERS - CRUD FUNCTIONS
+// ============================
+
+// loadUsers - Fetch all users from the API and display them in the table
+async function loadUsers() {
+    try {
+        let users = await apiCall('GET', '/api/users');
+        let table_body = document.getElementById('users-table-body');
+        table_body.innerHTML = '';
+        for (let i = 0; i < users.length; i++) {
+            let user = users[i];
+            let row = '<tr>';
+            row += '<td>' + user.id + '</td>';
+            row += '<td>' + user.name + '</td>';
+            row += '<td>' + user.email + '</td>';
+            row += '<td>' + user.department + '</td>';
+            row += '<td>' + user.role + '</td>';
+            row += '<td>';
+            row += '<button class="btn btn-edit" onclick="editUser(' + user.id + ')">Edit</button>';
+            row += '<button class="btn btn-delete" onclick="deleteUser(' + user.id + ')">Delete</button>';
+            row += '</td>';
+            row += '</tr>';
+            table_body.innerHTML += row;
+        }
+    } catch (error) {
+        showMessage('Error loading users: ' + error.message, true);
+    }
+}
+
+// saveUser - Create a new user or update an existing one
+async function saveUser() {
+    let user_data = {
+        name: document.getElementById('user-name').value,
+        email: document.getElementById('user-email').value,
+        department: document.getElementById('user-department').value,
+        role: document.getElementById('user-role').value
+    };
+
+    if (!user_data.name || !user_data.email) {
+        showMessage('Name and email are required', true);
+        return;
+    }
+
+    try {
+        let user_id = document.getElementById('user-id').value;
+        if (user_id) {
+            await apiCall('PUT', '/api/users/' + user_id, user_data);
+            showMessage('User updated successfully');
+        } else {
+            await apiCall('POST', '/api/users', user_data);
+            showMessage('User added successfully');
+        }
+        clearUserForm();
+        loadUsers();
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// editUser - Fill the form with a user's data for editing
+async function editUser(id) {
+    try {
+        let users = await apiCall('GET', '/api/users');
+        let user = users.find(function(u) { return u.id === id; });
+        if (user) {
+            document.getElementById('user-id').value = user.id;
+            document.getElementById('user-name').value = user.name;
+            document.getElementById('user-email').value = user.email;
+            document.getElementById('user-department').value = user.department;
+            document.getElementById('user-role').value = user.role;
+            document.querySelector('#user-form .btn-add').textContent = 'Save Changes';
+            document.getElementById('user-cancel-btn').style.display = 'inline';
+        }
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// deleteUser - Delete a user after confirmation
+async function deleteUser(id) {
+    try {
+        await apiCall('DELETE', '/api/users/' + id);
+        showMessage('User deleted successfully');
+        loadUsers();
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// clearUserForm - Reset the user form to blank
+function clearUserForm() {
+    document.getElementById('user-id').value = '';
+    document.getElementById('user-name').value = '';
+    document.getElementById('user-email').value = '';
+    document.getElementById('user-department').value = '';
+    document.getElementById('user-role').value = '';
+    document.querySelector('#user-form .btn-add').textContent = 'Add User';
+    document.getElementById('user-cancel-btn').style.display = 'none';
 }
 
 // ============================
