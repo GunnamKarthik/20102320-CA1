@@ -64,6 +64,7 @@ def create_assignment():
         db.close()
         return jsonify({'error': 'This user is already assigned to this license'}), 409
 
+    # Return the newly created assignment
     new_assignment = db.execute('SELECT * FROM license_assignments WHERE id = ?', (cursor.lastrowid,)).fetchone()
     db.close()
     return jsonify(dict(new_assignment)), 201
@@ -82,6 +83,7 @@ def update_assignment(assignment_id):
     )
     db.commit()
 
+    # Return the updated assignment
     updated_assignment = db.execute('SELECT * FROM license_assignments WHERE id = ?', (assignment_id,)).fetchone()
     db.close()
 
@@ -89,3 +91,13 @@ def update_assignment(assignment_id):
         return jsonify({'error': 'Assignment not found'}), 404
 
     return jsonify(dict(updated_assignment))
+
+
+@assignments_bp.route('/api/assignments/<int:assignment_id>', methods=['DELETE'])
+def delete_assignment(assignment_id):
+    """Remove an assignment (unassign a user from a license, freeing up a seat)."""
+    db = get_db()
+    db.execute('DELETE FROM license_assignments WHERE id = ?', (assignment_id,))
+    db.commit()
+    db.close()
+    return jsonify({'message': 'Assignment removed successfully'})
