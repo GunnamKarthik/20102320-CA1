@@ -1008,9 +1008,6 @@ async function editAssignment(id) {
             document.getElementById('assignment-user').value = assignment.user_id;
             document.getElementById('assignment-date').value = assignment.assignment_date;
             document.getElementById('assignment-notes').value = assignment.notes;
-            // Disable the license and user dropdowns during edit (only date and notes can change)
-            document.getElementById('assignment-license').disabled = true;
-            document.getElementById('assignment-user').disabled = true;
             document.querySelector('#assignment-form .btn-add').textContent = 'Save Changes';
             document.getElementById('assignment-cancel-btn').style.display = 'inline';
         }
@@ -1038,9 +1035,6 @@ function clearAssignmentForm() {
     document.getElementById('assignment-user').value = '';
     document.getElementById('assignment-date').value = '';
     document.getElementById('assignment-notes').value = '';
-    // Re-enable the dropdowns (they were disabled during edit mode)
-    document.getElementById('assignment-license').disabled = false;
-    document.getElementById('assignment-user').disabled = false;
     document.querySelector('#assignment-form .btn-add').textContent = 'Assign License';
     document.getElementById('assignment-cancel-btn').style.display = 'none';
 }
