@@ -4,10 +4,11 @@
 from flask import Flask, render_template
 from db import init_db
 
-# Import route blueprints
+# Import all route blueprints
 from routes_vendors import vendors_bp
 from routes_licenses import licenses_bp
 from routes_users import users_bp
+from routes_assignments import assignments_bp
 
 # Create the Flask application
 app = Flask(__name__)
@@ -19,10 +20,11 @@ def home():
     return render_template('index.html')
 
 
-# Register blueprints (each handles CRUD for one entity)
+# Register all blueprints (each handles CRUD for one entity)
 app.register_blueprint(vendors_bp)
 app.register_blueprint(licenses_bp)
 app.register_blueprint(users_bp)
+app.register_blueprint(assignments_bp)
 
 
 # Run the app
