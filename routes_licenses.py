@@ -42,13 +42,13 @@ def get_all_licenses():
                WHERE 1=1"""
     params = []
 
-    # Filter by status if provided
+    # Filter by status if provided (e.g. ?status=active)
     status_filter = request.args.get('status')
     if status_filter:
         query += " AND l.status = ?"
         params.append(status_filter)
 
-    # Search by software name if provided
+    # Search by software name if provided (e.g. ?search=Office)
     search_term = request.args.get('search')
     if search_term:
         query += " AND l.software_name LIKE ?"
@@ -56,6 +56,7 @@ def get_all_licenses():
 
     query += " ORDER BY l.software_name"
 
+    # Execute the query and return results
     licenses = db.execute(query, params).fetchall()
     db.close()
     result = [dict(row) for row in licenses]
@@ -122,3 +123,13 @@ def update_license(license_id):
         return jsonify({'error': 'License not found'}), 404
 
     return jsonify(dict(updated_license))
+
+
+@licenses_bp.route('/api/licenses/<int:license_id>', methods=['DELETE'])
+def delete_license(license_id):
+    """Delete a license. Any assignments will be removed automatically (CASCADE)."""
+    db = get_db()
+    db.execute('DELETE FROM licenses WHERE id = ?', (license_id,))
+    db.commit()
+    db.close()
+    return jsonify({'message': 'License deleted successfully'})
