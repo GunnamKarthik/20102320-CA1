@@ -294,6 +294,21 @@
         </select>
     </div>
 
+    <!-- Currency conversion selector -->
+    <div class="filter-bar">
+        <label>Convert costs to:</label>
+        <select id="convert-target-currency">
+            <option value="">-- Select --</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="INR">INR</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+        </select>
+        <button class="btn btn-convert" onclick="convertAllCosts()">Convert</button>
+    </div>
 
     <!-- Table to display all licenses -->
     <table>
@@ -309,6 +324,7 @@
                 <th>Purchase Date</th>
                 <th>Expiry Date</th>
                 <th>Status</th>
+                <th>Converted</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -644,6 +660,7 @@ async function loadLicenses() {
             row += '<td>' + license.purchase_date + '</td>';
             row += '<td>' + license.expiry_date + '</td>';
             row += '<td class="' + status_class + '">' + license.status + '</td>';
+            row += '<td id="convert-cell-' + license.id + '">-</td>';
             row += '<td>';
             row += '<button class="btn btn-edit" onclick="editLicense(' + license.id + ')">Edit</button>';
             row += '<button class="btn btn-delete" onclick="deleteLicense(' + license.id + ')">Delete</button>';
@@ -745,6 +762,40 @@ function clearLicenseForm() {
     document.getElementById('license-status').value = 'active';
     document.querySelector('#license-form .btn-add').textContent = 'Add License';
     document.getElementById('license-cancel-btn').style.display = 'none';
+}
+
+// convertAllCosts - Convert all license costs to the selected target currency
+async function convertAllCosts() {
+    let target_currency = document.getElementById('convert-target-currency').value;
+    if (!target_currency) {
+        showMessage('Please select a target currency to convert to', true);
+        return;
+    }
+
+    try {
+        // Get all currently displayed licenses
+        let licenses = await apiCall('GET', '/api/licenses');
+        // Convert each license's cost
+        for (let i = 0; i < licenses.length; i++) {
+            let license = licenses[i];
+            // Skip if the license is already in the target currency
+            if (license.currency === target_currency) {
+                document.getElementById('convert-cell-' + license.id).textContent = license.cost + ' ' + target_currency;
+                continue;
+            }
+            // Call the conversion API
+            let result = await apiCall('GET',
+                '/api/convert?amount=' + license.cost +
+                '&from=' + license.currency +
+                '&to=' + target_currency
+            );
+            // Display the converted amount in the table cell
+            document.getElementById('convert-cell-' + license.id).textContent = result.converted + ' ' + target_currency;
+        }
+        showMessage('Costs converted to ' + target_currency);
+    } catch (error) {
+        showMessage('Error converting: ' + error.message, true);
+    }
 }
 
 // ============================
