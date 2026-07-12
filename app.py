@@ -9,6 +9,7 @@ from routes_vendors import vendors_bp
 from routes_licenses import licenses_bp
 from routes_users import users_bp
 from routes_assignments import assignments_bp
+from routes_convert import convert_bp
 
 # Create the Flask application
 app = Flask(__name__)
@@ -25,6 +26,7 @@ app.register_blueprint(vendors_bp)
 app.register_blueprint(licenses_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(assignments_bp)
+app.register_blueprint(convert_bp)
 
 
 # Run the app
