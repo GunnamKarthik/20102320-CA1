@@ -67,3 +67,25 @@ def create_assignment():
     new_assignment = db.execute('SELECT * FROM license_assignments WHERE id = ?', (cursor.lastrowid,)).fetchone()
     db.close()
     return jsonify(dict(new_assignment)), 201
+
+
+@assignments_bp.route('/api/assignments/<int:assignment_id>', methods=['PUT'])
+def update_assignment(assignment_id):
+    """Update an assignment's date or notes."""
+    data = request.get_json()
+
+    db = get_db()
+    # Only update the assignment date and notes (not the license or user link)
+    db.execute(
+        'UPDATE license_assignments SET assignment_date = ?, notes = ? WHERE id = ?',
+        (data.get('assignment_date', ''), data.get('notes', ''), assignment_id)
+    )
+    db.commit()
+
+    updated_assignment = db.execute('SELECT * FROM license_assignments WHERE id = ?', (assignment_id,)).fetchone()
+    db.close()
+
+    if not updated_assignment:
+        return jsonify({'error': 'Assignment not found'}), 404
+
+    return jsonify(dict(updated_assignment))
