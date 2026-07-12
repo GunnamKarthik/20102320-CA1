@@ -366,7 +366,51 @@
 <!-- ========== ASSIGNMENTS SECTION ========== -->
 <div id="section-assignments" class="section">
     <h2>License Assignments</h2>
-    <p>License assignments coming soon.</p>
+
+    <!-- Assignment form for creating/updating -->
+    <div id="assignment-form">
+        <input type="hidden" id="assignment-id">
+        <div class="form-group">
+            <label for="assignment-license">License*:</label>
+            <select id="assignment-license" required>
+                <!-- Options populated by JavaScript (shows software name + available seats) -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="assignment-user">User*:</label>
+            <select id="assignment-user" required>
+                <!-- Options populated by JavaScript (shows name + email) -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="assignment-date">Assignment Date:</label>
+            <input type="date" id="assignment-date">
+        </div>
+        <div class="form-group">
+            <label for="assignment-notes">Notes:</label>
+            <input type="text" id="assignment-notes" placeholder="Optional notes...">
+        </div>
+        <button class="btn btn-add" onclick="saveAssignment()">Assign License</button>
+        <button class="btn btn-cancel" onclick="clearAssignmentForm()" style="display:none" id="assignment-cancel-btn">Cancel</button>
+    </div>
+
+    <!-- Table to display all assignments -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Software</th>
+                <th>User</th>
+                <th>Email</th>
+                <th>Assignment Date</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="assignments-table-body">
+            <!-- Rows will be inserted here by JavaScript -->
+        </tbody>
+    </table>
 </div>
 
 <!-- ==================== JAVASCRIPT ==================== -->
@@ -429,6 +473,7 @@ function showTab(tab_name) {
     if (tab_name === 'vendors') loadVendors();
     if (tab_name === 'licenses') loadLicenses();
     if (tab_name === 'users') loadUsers();
+    if (tab_name === 'assignments') loadAssignments();
 }
 
 // ============================
@@ -801,6 +846,148 @@ function clearUserForm() {
     document.getElementById('user-role').value = '';
     document.querySelector('#user-form .btn-add').textContent = 'Add User';
     document.getElementById('user-cancel-btn').style.display = 'none';
+}
+
+// ============================
+// ASSIGNMENTS - CRUD FUNCTIONS
+// ============================
+
+// loadAssignmentDropdowns - Populate the license and user dropdowns in the assignment form
+async function loadAssignmentDropdowns() {
+    try {
+        // Load licenses into the dropdown, showing available seats
+        let licenses = await apiCall('GET', '/api/licenses');
+        let license_dropdown = document.getElementById('assignment-license');
+        license_dropdown.innerHTML = '<option value="">-- Select License --</option>';
+        for (let i = 0; i < licenses.length; i++) {
+            let l = licenses[i];
+            let available_seats = l.seats - l.assigned_count;
+            license_dropdown.innerHTML += '<option value="' + l.id + '">' + l.software_name + ' (' + available_seats + ' seats available)</option>';
+        }
+
+        // Load users into the dropdown, showing name and email
+        let users = await apiCall('GET', '/api/users');
+        let user_dropdown = document.getElementById('assignment-user');
+        user_dropdown.innerHTML = '<option value="">-- Select User --</option>';
+        for (let i = 0; i < users.length; i++) {
+            let u = users[i];
+            user_dropdown.innerHTML += '<option value="' + u.id + '">' + u.name + ' (' + u.email + ')</option>';
+        }
+    } catch (error) {
+        showMessage('Error loading dropdowns: ' + error.message, true);
+    }
+}
+
+// loadAssignments - Fetch all assignments and display them in the table
+async function loadAssignments() {
+    try {
+        // Refresh the dropdowns each time we load assignments
+        await loadAssignmentDropdowns();
+
+        let assignments = await apiCall('GET', '/api/assignments');
+        let table_body = document.getElementById('assignments-table-body');
+        table_body.innerHTML = '';
+        for (let i = 0; i < assignments.length; i++) {
+            let assignment = assignments[i];
+            let row = '<tr>';
+            row += '<td>' + assignment.id + '</td>';
+            row += '<td>' + (assignment.software_name || 'N/A') + '</td>';
+            row += '<td>' + (assignment.user_name || 'N/A') + '</td>';
+            row += '<td>' + (assignment.user_email || 'N/A') + '</td>';
+            row += '<td>' + assignment.assignment_date + '</td>';
+            row += '<td>' + assignment.notes + '</td>';
+            row += '<td>';
+            row += '<button class="btn btn-edit" onclick="editAssignment(' + assignment.id + ')">Edit</button>';
+            row += '<button class="btn btn-delete" onclick="deleteAssignment(' + assignment.id + ')">Delete</button>';
+            row += '</td>';
+            row += '</tr>';
+            table_body.innerHTML += row;
+        }
+    } catch (error) {
+        showMessage('Error loading assignments: ' + error.message, true);
+    }
+}
+
+// saveAssignment - Create a new assignment or update an existing one
+async function saveAssignment() {
+    let assignment_data = {
+        license_id: parseInt(document.getElementById('assignment-license').value),
+        user_id: parseInt(document.getElementById('assignment-user').value),
+        assignment_date: document.getElementById('assignment-date').value,
+        notes: document.getElementById('assignment-notes').value
+    };
+
+    if (!assignment_data.license_id || !assignment_data.user_id) {
+        showMessage('License and user are required', true);
+        return;
+    }
+
+    // Set today's date as default if no date is provided
+    if (!assignment_data.assignment_date) {
+        assignment_data.assignment_date = new Date().toISOString().split('T')[0];
+    }
+
+    try {
+        let assignment_id = document.getElementById('assignment-id').value;
+        if (assignment_id) {
+            await apiCall('PUT', '/api/assignments/' + assignment_id, assignment_data);
+            showMessage('Assignment updated successfully');
+        } else {
+            await apiCall('POST', '/api/assignments', assignment_data);
+            showMessage('License assigned successfully');
+        }
+        clearAssignmentForm();
+        loadAssignments();
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// editAssignment - Fill the form with an assignment's data for editing
+async function editAssignment(id) {
+    try {
+        let assignments = await apiCall('GET', '/api/assignments');
+        let assignment = assignments.find(function(a) { return a.id === id; });
+        if (assignment) {
+            document.getElementById('assignment-id').value = assignment.id;
+            document.getElementById('assignment-license').value = assignment.license_id;
+            document.getElementById('assignment-user').value = assignment.user_id;
+            document.getElementById('assignment-date').value = assignment.assignment_date;
+            document.getElementById('assignment-notes').value = assignment.notes;
+            // Disable the license and user dropdowns during edit (only date and notes can change)
+            document.getElementById('assignment-license').disabled = true;
+            document.getElementById('assignment-user').disabled = true;
+            document.querySelector('#assignment-form .btn-add').textContent = 'Save Changes';
+            document.getElementById('assignment-cancel-btn').style.display = 'inline';
+        }
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// deleteAssignment - Remove an assignment (unassign a user from a license)
+async function deleteAssignment(id) {
+    try {
+        await apiCall('DELETE', '/api/assignments/' + id);
+        showMessage('Assignment removed successfully');
+        loadAssignments();
+    } catch (error) {
+        showMessage('Error: ' + error.message, true);
+    }
+}
+
+// clearAssignmentForm - Reset the assignment form to blank
+function clearAssignmentForm() {
+    document.getElementById('assignment-id').value = '';
+    document.getElementById('assignment-license').value = '';
+    document.getElementById('assignment-user').value = '';
+    document.getElementById('assignment-date').value = '';
+    document.getElementById('assignment-notes').value = '';
+    // Re-enable the dropdowns (they were disabled during edit mode)
+    document.getElementById('assignment-license').disabled = false;
+    document.getElementById('assignment-user').disabled = false;
+    document.querySelector('#assignment-form .btn-add').textContent = 'Assign License';
+    document.getElementById('assignment-cancel-btn').style.display = 'none';
 }
 
 // ============================
