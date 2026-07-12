@@ -47,3 +47,35 @@ def create_user():
     new_user = db.execute('SELECT * FROM users WHERE id = ?', (cursor.lastrowid,)).fetchone()
     db.close()
     return jsonify(dict(new_user)), 201
+
+
+@users_bp.route('/api/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    """Update an existing user record."""
+    data = request.get_json()
+
+    if not data.get('name') or not data.get('email'):
+        return jsonify({'error': 'Name and email are required'}), 400
+
+    db = get_db()
+
+    # Check if another user already has this email (not the current user)
+    existing_user = db.execute('SELECT id FROM users WHERE email = ? AND id != ?', (data['email'], user_id)).fetchone()
+    if existing_user:
+        db.close()
+        return jsonify({'error': 'Another user with this email already exists'}), 409
+
+    # Update the user's details
+    db.execute(
+        'UPDATE users SET name = ?, email = ?, department = ?, role = ? WHERE id = ?',
+        (data['name'], data['email'], data.get('department', ''), data.get('role', ''), user_id)
+    )
+    db.commit()
+
+    updated_user = db.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    db.close()
+
+    if not updated_user:
+        return jsonify({'error': 'User not found'}), 404
+
+    return jsonify(dict(updated_user))
