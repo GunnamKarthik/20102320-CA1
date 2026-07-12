@@ -23,3 +23,47 @@ def get_all_assignments():
     db.close()
     result = [dict(row) for row in assignments]
     return jsonify(result)
+
+
+@assignments_bp.route('/api/assignments', methods=['POST'])
+def create_assignment():
+    """Assign a license to a user. Checks if there are available seats first."""
+    data = request.get_json()
+
+    # Validate required fields
+    if not data.get('license_id') or not data.get('user_id'):
+        return jsonify({'error': 'License and user are required'}), 400
+
+    db = get_db()
+
+    # Get the license to check how many seats it has
+    license_row = db.execute('SELECT seats FROM licenses WHERE id = ?', (data['license_id'],)).fetchone()
+    if not license_row:
+        db.close()
+        return jsonify({'error': 'License not found'}), 400
+
+    # Count how many users are already assigned to this license
+    assigned_count = db.execute(
+        'SELECT COUNT(*) as count FROM license_assignments WHERE license_id = ?',
+        (data['license_id'],)
+    ).fetchone()['count']
+
+    # Check if there are any seats left
+    if assigned_count >= license_row['seats']:
+        db.close()
+        return jsonify({'error': 'No available seats for this license'}), 400
+
+    # Try to create the assignment (will fail if user is already assigned due to UNIQUE constraint)
+    try:
+        cursor = db.execute(
+            'INSERT INTO license_assignments (license_id, user_id, assignment_date, notes) VALUES (?, ?, ?, ?)',
+            (data['license_id'], data['user_id'], data.get('assignment_date', ''), data.get('notes', ''))
+        )
+        db.commit()
+    except Exception:
+        db.close()
+        return jsonify({'error': 'This user is already assigned to this license'}), 409
+
+    new_assignment = db.execute('SELECT * FROM license_assignments WHERE id = ?', (cursor.lastrowid,)).fetchone()
+    db.close()
+    return jsonify(dict(new_assignment)), 201
