@@ -317,3 +317,32 @@ All 25 tests pass successfully:
 
 ---
 
+
+---
+
+## Project Structure
+
+```
+D:/Karthik/
+├── app.py                  # Main Flask app (~30 lines)
+├── db.py                   # Database connection and schema (~60 lines)
+├── routes_vendors.py       # Vendor CRUD endpoints (~65 lines)
+├── routes_licenses.py      # License CRUD endpoints (~100 lines)
+├── routes_users.py         # User CRUD endpoints (~75 lines)
+├── routes_assignments.py   # Assignment CRUD endpoints (~80 lines)
+├── routes_convert.py       # Currency conversion endpoint (~40 lines)
+├── templates/
+│   └── index.html          # Single-page frontend (~550 lines)
+├── tests/
+│   ├── conftest.py         # Shared test fixtures
+│   ├── test_vendors.py     # Vendor unit tests
+│   ├── test_licenses.py    # License unit tests
+│   ├── test_users.py       # User unit tests
+│   ├── test_assignments.py # Assignment unit tests
+│   └── test_integration.py # Integration test
+├── requirements.txt        # Python dependencies
+└── README.md               # This file
+```
+
+---
+
