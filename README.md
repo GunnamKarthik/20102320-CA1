@@ -184,3 +184,14 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | DELETE | `/api/users/<id>` | Delete a user |
 
 
+
+### Assignment Endpoints
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/api/assignments` | Get all assignments (with joined names) |
+| POST | `/api/assignments` | Create an assignment (checks seat availability) |
+| PUT | `/api/assignments/<id>` | Update an assignment |
+| DELETE | `/api/assignments/<id>` | Delete an assignment |
+
+
