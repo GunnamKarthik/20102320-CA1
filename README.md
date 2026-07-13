@@ -67,3 +67,21 @@ Each entity supports full CRUD:
 
 ---
 
+
+---
+
+## Architecture
+
+```
+Browser (JavaScript)  <--->  Flask API (Python)  <--->  SQLite Database
+```
+
+- **Frontend**: Single HTML page with inline CSS and JavaScript. Uses `fetch()` to make API calls.
+- **Backend**: Python Flask with Blueprint-based route modules. Returns JSON responses.
+- **Database**: SQLite with 4 tables and foreign key relationships.
+- **External API**: ExchangeRate API (open.er-api.com) for currency conversion.
+
+The system follows an **API-based architecture** — the frontend communicates with the backend exclusively through API calls. No page refreshes occur; all updates happen on the same page using JavaScript DOM manipulation.
+
+---
+
