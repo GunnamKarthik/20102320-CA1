@@ -1,16 +1,10 @@
 # Karthik IT Solutions - Software License Manager
 
-
----
-
 ## Overview
 
 This is a web-based Software License Manager built for **Karthik IT Solutions**, a small IT consultancy. The application helps the company track its software licenses, manage vendors, assign licenses to employees, and monitor costs across different currencies.
 
 The system is built as a **proof-of-concept** CRUD (Create, Read, Update, Delete) application using Python Flask, SQLite, and JavaScript.
-
----
-
 
 ---
 
@@ -23,9 +17,6 @@ The system is built as a **proof-of-concept** CRUD (Create, Read, Update, Delete
 - See who is using which license
 - Monitor software costs across different currencies
 - Manage vendor relationships
-
----
-
 
 ---
 
@@ -67,9 +58,6 @@ Each entity supports full CRUD:
 
 ---
 
-
----
-
 ## Architecture
 
 ```
@@ -82,9 +70,6 @@ Browser (JavaScript)  <--->  Flask API (Python)  <--->  SQLite Database
 - **External API**: ExchangeRate API (open.er-api.com) for currency conversion.
 
 The system follows an **API-based architecture** — the frontend communicates with the backend exclusively through API calls. No page refreshes occur; all updates happen on the same page using JavaScript DOM manipulation.
-
----
-
 
 ---
 
@@ -146,9 +131,6 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 
 ---
 
-
----
-
 ## API Documentation
 
 ### Vendor Endpoints
@@ -195,9 +177,6 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 
 ---
 
-
----
-
 ## Setup and Installation
 
 ### Prerequisites
@@ -231,9 +210,6 @@ The database file (`license_manager.db`) is created automatically on first run.
 
 ---
 
-
----
-
 ## How to Use
 
 ### Workflow
@@ -259,9 +235,6 @@ The database file (`license_manager.db`) is created automatically on first run.
 
 ---
 
-
----
-
 ## External API Integration
 
 ### ExchangeRate API
@@ -276,9 +249,6 @@ The application uses the **Open ExchangeRate API** (https://open.er-api.com) to 
 **Why this matters:** Karthik IT Solutions works with vendors in different countries and currencies. Being able to see all costs in one currency helps the company evaluate total software spending and make budget decisions.
 
 The conversion is handled server-side (through Flask) rather than directly from JavaScript, following the API-based architecture requirement.
-
----
-
 
 ---
 
@@ -317,9 +287,6 @@ All 25 tests pass successfully:
 
 ---
 
-
----
-
 ## Project Structure
 
 ```
@@ -346,9 +313,6 @@ D:/Karthik/
 
 ---
 
-
----
-
 ## Technologies Used
 
 - **Python 3.11** - Backend programming language
@@ -361,13 +325,9 @@ D:/Karthik/
 
 ---
 
-
----
-
 ## Attributions
 
 - **Flask** - Web framework (https://flask.palletsprojects.com/) - BSD License
 - **ExchangeRate API** - Free currency conversion API (https://open.er-api.com)
 - **pytest** - Testing framework (https://pytest.org/) - MIT License
 - **requests** - HTTP library for Python (https://requests.readthedocs.io/) - Apache 2.0 License
-
