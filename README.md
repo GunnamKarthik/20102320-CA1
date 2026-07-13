@@ -26,3 +26,44 @@ The system is built as a **proof-of-concept** CRUD (Create, Read, Update, Delete
 
 ---
 
+
+---
+
+## System Requirements
+
+### Data Requirements
+
+The system manages four main entities:
+
+1. **Vendors** - Software suppliers (e.g., Microsoft, Adobe)
+   - Company name, contact email, website, country, default currency
+
+2. **Licenses** - Software licenses owned by the company
+   - Software name, license key, purchase/expiry dates, number of seats, cost, currency, status, linked vendor
+
+3. **Users** - Employees who use the software
+   - Name, email, department, role
+
+4. **License Assignments** - Links between users and licenses
+   - Which user has which license, assignment date, notes
+
+### CRUD Operations
+
+Each entity supports full CRUD:
+- **Create**: Add new records via forms
+- **Read**: View all records in tables, with search and filter for licenses
+- **Update**: Edit existing records (form pre-fills with current data)
+- **Delete**: Remove records with confirmation dialog
+
+### Additional Features
+
+- **Search and Filter**: Search licenses by software name, filter by status (Active/Expiring/Expired)
+- **Seat Tracking**: Shows how many seats are used vs. available for each license
+- **Auto Status Updates**: Automatically marks licenses as "expired" or "expiring" based on dates
+- **Currency Conversion**: Convert license costs between currencies using the ExchangeRate API
+- **Validation**: Required fields enforced on both client and server side
+- **Delete Protection**: Cannot delete a vendor that still has licenses linked to it
+- **Cascading Deletes**: Removing a user or license automatically removes their assignments
+
+---
+
