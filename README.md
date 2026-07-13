@@ -162,3 +162,14 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | DELETE | `/api/vendors/<id>` | Delete a vendor |
 
 
+
+### License Endpoints
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/api/licenses?status=active&search=Office` | Get licenses (with optional filter/search) |
+| POST | `/api/licenses` | Create a new license |
+| PUT | `/api/licenses/<id>` | Update a license |
+| DELETE | `/api/licenses/<id>` | Delete a license |
+
+
