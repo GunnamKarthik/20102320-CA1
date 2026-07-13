@@ -204,3 +204,30 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 - Python 3.x installed
 - pip (Python package manager)
 
+### Steps
+
+1. Clone the repository:
+   ```
+   git clone <repository-url>
+   cd Karthik
+   ```
+
+2. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+
+3. Run the application:
+   ```
+   python app.py
+   ```
+
+4. Open your browser and go to:
+   ```
+   http://localhost:5000
+   ```
+
+The database file (`license_manager.db`) is created automatically on first run.
+
+---
+
