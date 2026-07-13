@@ -173,3 +173,14 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | DELETE | `/api/licenses/<id>` | Delete a license |
 
 
+
+### User Endpoints
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/api/users` | Get all users |
+| POST | `/api/users` | Create a new user |
+| PUT | `/api/users/<id>` | Update a user |
+| DELETE | `/api/users/<id>` | Delete a user |
+
+
