@@ -259,3 +259,23 @@ The database file (`license_manager.db`) is created automatically on first run.
 
 ---
 
+
+---
+
+## External API Integration
+
+### ExchangeRate API
+
+The application uses the **Open ExchangeRate API** (https://open.er-api.com) to convert license costs between currencies. This is a free API that requires no API key.
+
+**How it works:**
+1. On the Licenses tab, select a target currency from the "Convert costs to" dropdown
+2. Click "Convert"
+3. Each license's cost is converted and displayed in the "Converted" column
+
+**Why this matters:** Karthik IT Solutions works with vendors in different countries and currencies. Being able to see all costs in one currency helps the company evaluate total software spending and make budget decisions.
+
+The conversion is handled server-side (through Flask) rather than directly from JavaScript, following the API-based architecture requirement.
+
+---
+
