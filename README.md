@@ -361,3 +361,13 @@ D:/Karthik/
 
 ---
 
+
+---
+
+## Attributions
+
+- **Flask** - Web framework (https://flask.palletsprojects.com/) - BSD License
+- **ExchangeRate API** - Free currency conversion API (https://open.er-api.com)
+- **pytest** - Testing framework (https://pytest.org/) - MIT License
+- **requests** - HTTP library for Python (https://requests.readthedocs.io/) - Apache 2.0 License
+
