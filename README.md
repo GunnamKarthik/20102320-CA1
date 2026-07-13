@@ -85,3 +85,80 @@ The system follows an **API-based architecture** — the frontend communicates w
 
 ---
 
+
+---
+
+## Database Schema
+
+### Entity Relationship
+
+```
+vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1) users
+```
+
+- A vendor can have many licenses
+- A license can be assigned to many users (limited by seat count)
+- A user can have many license assignments
+
+### Tables
+
+**vendors**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INTEGER | Primary key, auto-increment |
+| company_name | TEXT | Required |
+| contact_email | TEXT | |
+| website | TEXT | |
+| country | TEXT | |
+| default_currency | TEXT | Default: USD |
+
+**licenses**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INTEGER | Primary key, auto-increment |
+| software_name | TEXT | Required |
+| license_key | TEXT | Required |
+| purchase_date | TEXT | ISO date format |
+| expiry_date | TEXT | ISO date format |
+| seats | INTEGER | Default: 1 |
+| cost | REAL | Default: 0.0 |
+| currency | TEXT | Default: USD |
+| status | TEXT | active / expiring / expired |
+| vendor_id | INTEGER | Foreign key to vendors |
+
+**users**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INTEGER | Primary key, auto-increment |
+| name | TEXT | Required |
+| email | TEXT | Required, unique |
+| department | TEXT | |
+| role | TEXT | |
+
+**license_assignments**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INTEGER | Primary key, auto-increment |
+| license_id | INTEGER | Foreign key to licenses |
+| user_id | INTEGER | Foreign key to users |
+| assignment_date | TEXT | ISO date format |
+| notes | TEXT | |
+
+---
+
+
+---
+
+## API Documentation
+
+
+### Vendor Endpoints
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/api/vendors` | Get all vendors |
+| POST | `/api/vendors` | Create a new vendor |
+| PUT | `/api/vendors/<id>` | Update a vendor |
+| DELETE | `/api/vendors/<id>` | Delete a vendor |
+
+
