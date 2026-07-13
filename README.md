@@ -151,7 +151,6 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 
 ## API Documentation
 
-
 ### Vendor Endpoints
 
 | Method | URL | Description |
@@ -160,8 +159,6 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | POST | `/api/vendors` | Create a new vendor |
 | PUT | `/api/vendors/<id>` | Update a vendor |
 | DELETE | `/api/vendors/<id>` | Delete a vendor |
-
-
 
 ### License Endpoints
 
@@ -172,8 +169,6 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | PUT | `/api/licenses/<id>` | Update a license |
 | DELETE | `/api/licenses/<id>` | Delete a license |
 
-
-
 ### User Endpoints
 
 | Method | URL | Description |
@@ -182,8 +177,6 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | POST | `/api/users` | Create a new user |
 | PUT | `/api/users/<id>` | Update a user |
 | DELETE | `/api/users/<id>` | Delete a user |
-
-
 
 ### Assignment Endpoints
 
@@ -194,8 +187,6 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | PUT | `/api/assignments/<id>` | Update an assignment |
 | DELETE | `/api/assignments/<id>` | Delete an assignment |
 
-
-
 ### Currency Conversion
 
 | Method | URL | Description |
@@ -203,4 +194,13 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | GET | `/api/convert?amount=100&from=USD&to=EUR` | Convert currency using ExchangeRate API |
 
 ---
+
+
+---
+
+## Setup and Installation
+
+### Prerequisites
+- Python 3.x installed
+- pip (Python package manager)
 
