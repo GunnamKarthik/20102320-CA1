@@ -231,3 +231,31 @@ The database file (`license_manager.db`) is created automatically on first run.
 
 ---
 
+
+---
+
+## How to Use
+
+### Workflow
+
+1. **Start with Vendors**: Add your software vendors first (e.g., Microsoft, Adobe)
+2. **Add Licenses**: Create licenses and link them to vendors
+3. **Add Users**: Add employees who will use the software
+4. **Assign Licenses**: Go to the Assignments tab to assign licenses to users
+
+### Using Each Tab
+
+- **Vendors Tab**: Add/edit/delete vendor companies. You cannot delete a vendor that still has licenses.
+- **Licenses Tab**: Add/edit/delete licenses. Use the search box and status filter to find specific licenses. Use the "Convert" button to see costs in different currencies.
+- **Users Tab**: Add/edit/delete employees. Deleting a user removes their license assignments.
+- **Assignments Tab**: Assign licenses to users. The dropdown shows available seats. You cannot assign more users than the license allows.
+
+### Editing a Record
+1. Click the "Edit" button on any row
+2. The form fills with the current data
+3. Make your changes
+4. Click "Save Changes"
+5. Click "Cancel" to discard changes
+
+---
+
