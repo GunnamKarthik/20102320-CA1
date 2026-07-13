@@ -195,3 +195,12 @@ vendors (1) ----< (many) licenses (1) ----< (many) license_assignments >---- (1)
 | DELETE | `/api/assignments/<id>` | Delete an assignment |
 
 
+
+### Currency Conversion
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/api/convert?amount=100&from=USD&to=EUR` | Convert currency using ExchangeRate API |
+
+---
+
