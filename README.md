@@ -279,3 +279,41 @@ The conversion is handled server-side (through Flask) rather than directly from 
 
 ---
 
+
+---
+
+## Testing
+
+### Running Tests
+
+```
+pytest tests/ -v
+```
+
+### Test Coverage
+
+**Unit Tests (20 tests across 4 files):**
+
+- `test_vendors.py` - Tests vendor CRUD, validation, and delete protection
+- `test_licenses.py` - Tests license CRUD, search, filter, and vendor validation
+- `test_users.py` - Tests user CRUD, validation, and duplicate email check
+- `test_assignments.py` - Tests assignment CRUD, seat limits, and cascade deletes
+
+**Integration Test (1 comprehensive workflow):**
+
+- `test_integration.py` - Tests a complete business workflow end-to-end:
+  1. Creates a vendor, license, and users
+  2. Assigns licenses and checks seat counts
+  3. Tests currency conversion (with mocked external API)
+  4. Tests unassigning and cascade deletes
+  5. Verifies clean state at the end
+
+### Test Results
+
+All 25 tests pass successfully:
+```
+25 passed in 0.78s
+```
+
+---
+
