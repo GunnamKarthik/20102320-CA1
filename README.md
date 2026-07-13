@@ -346,3 +346,18 @@ D:/Karthik/
 
 ---
 
+
+---
+
+## Technologies Used
+
+- **Python 3.11** - Backend programming language
+- **Flask 3.0** - Web framework for building the API
+- **SQLite** - Lightweight database for data storage
+- **JavaScript** - Frontend logic (fetch API calls, DOM manipulation)
+- **HTML/CSS** - Page structure and styling (inline, within Flask template)
+- **ExchangeRate API** - External API for currency conversion
+- **pytest** - Testing framework
+
+---
+
