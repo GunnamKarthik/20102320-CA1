@@ -325,6 +325,69 @@ D:/Karthik/
 
 ---
 
+## Deployment (Ubuntu Server - GCP)
+
+### Server Details
+
+- **Server IP:** 34.140.56.119
+- **OS:** Ubuntu 24.04 LTS
+- **Platform:** Google Cloud Platform (Compute Engine)
+- **WSGI Server:** Gunicorn
+
+### Prerequisites
+
+- SSH key (`id_ed25519`) with access to the server
+- Python 3, pip, git installed on the server
+
+### Connect to Server
+
+```bash
+ssh -i id_ed25519 ubuntu@34.140.56.119
+```
+
+### First-Time Setup
+
+```bash
+sudo apt update && sudo apt install python3 python3-pip python3-venv git -y
+cd ~
+git clone https://github.com/GunnamKarthik/20102320-CA1.git
+cd 20102320-CA1
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install gunicorn
+```
+
+### Start the Application
+
+```bash
+cd ~/20102320-CA1
+source venv/bin/activate
+pkill gunicorn
+python3 -c "from db import init_db; init_db()"
+gunicorn --bind 0.0.0.0:5000 app:app
+```
+
+### Access the Application
+
+Open in browser: `http://34.140.56.119:5000`
+
+### Useful Commands
+
+| Command | Description |
+|---------|-------------|
+| `pkill gunicorn` | Stop the application |
+| `gunicorn --bind 0.0.0.0:5000 app:app` | Start the application |
+| `cd ~/20102320-CA1 && git pull` | Pull latest code from GitHub |
+
+### Firewall
+
+If the application is not reachable, ensure port 5000 is open in the GCP firewall:
+- Go to VPC Network > Firewall Rules
+- Create a rule allowing TCP port 5000 from 0.0.0.0/0
+
+---
+
 ## Attributions
 
 - **Flask** - Web framework (https://flask.palletsprojects.com/) - BSD License
